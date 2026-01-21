@@ -53,7 +53,7 @@ def clean_transactions_df(df):
     # ensure amount numeric and fill nulls with 0.0
     if "amount" in df.columns:
         df = df.withColumn("amount", F.col("amount").cast(DoubleType()))
-        df = df.withColumn("amount", F.when(F.col("amount").isNull(), F.lit(0.0)).otherwise(F.col("amount)))
+        df = df.withColumn("amount", F.when(F.col("amount").isNull(), F.lit(0.0)).otherwise(F.col("amount")))
     if "transaction_date" in df.columns:
         df = df.withColumn("transaction_date", F.to_timestamp("transaction_date"))
     if "status" in df.columns:
