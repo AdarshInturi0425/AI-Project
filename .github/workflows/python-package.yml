@@ -18,20 +18,13 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
-    - name: Install Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
     
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
         if [ -f SemanticLayer/requirements.txt ]; then pip install -r SemanticLayer/requirements.txt; fi
     
     - name: Create sample data
@@ -55,13 +48,13 @@ t_008,c_004,120.00
 t_009,c_004,110.00
 t_010,c_005,80.00" > SemanticLayer/data/raw/transactions.csv
     
-    - name: Run PySpark ETL
+    - name: Run pandas ETL (no Java required)
       run: |
-        python SemanticLayer/scripts/process_data_spark.py
+        python SemanticLayer/scripts/process_data.py
     
     - name: Run pytest
       run: |
-        pytest -v SemanticLayer/tests/
+        python -m pytest -v SemanticLayer/tests/
     
     - name: Run data validation
       run: |
