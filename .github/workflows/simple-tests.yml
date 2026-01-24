@@ -1,0 +1,54 @@
+# filepath: /Users/dattu/AI/AI-Project/.github/workflows/simple-tests.yml
+name: Simple Tests
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop, feature/* ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.9', '3.10', '3.11' ]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f SemanticLayer/requirements.txt ]; then pip install -r SemanticLayer/requirements.txt; fi
+
+    - name: Check Python syntax
+      run: |
+        python -m py_compile SemanticLayer/scripts/*.py
+        python -m py_compile SemanticLayer/tests/*.py
+
+    - name: Run pytest
+      run: |
+        python -m pytest -v SemanticLayer/tests/
+
+    - name: Run data validation
+      run: |
+        # Create sample data for validation
+        mkdir -p SemanticLayer/data/raw
+        echo "customer_id,email
+c_001,alice@example.com
+c_002,bob@example.com" > SemanticLayer/data/raw/customers.csv
+        echo "transaction_id,customer_id,amount
+t_001,c_001,50.00
+t_002,c_002,100.00" > SemanticLayer/data/raw/transactions.csv
+        
+        # Run ETL with pandas (no Java needed)
+        python SemanticLayer/scripts/process_data.py
+        
+        # Validate output
+        python SemanticLayer/scripts/data_validation.py
