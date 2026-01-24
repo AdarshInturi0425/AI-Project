@@ -1,3 +1,4 @@
+# filepath: /Users/dattu/AI/AI-Project/.gitignore
 # Python
 __pycache__/
 *.py[cod]
@@ -11,12 +12,6 @@ env/
 .idea/
 *.swp
 *.swo
-
-# Data files (generated, not source)
-SemanticLayer/data/raw/*.csv
-SemanticLayer/data/silver/*.csv
-SemanticLayer/data/gold/*.csv
-SemanticLayer/data/metadata.json
 
 # OS
 .DS_Store
