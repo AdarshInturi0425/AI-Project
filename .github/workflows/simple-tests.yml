@@ -36,19 +36,20 @@ jobs:
       run: |
         python -m pytest -v SemanticLayer/tests/
 
+    - name: Create sample data for validation
+      run: |
+        mkdir -p SemanticLayer/data/raw
+        echo "customer_id,email" > SemanticLayer/data/raw/customers.csv
+        echo "c_001,alice@example.com" >> SemanticLayer/data/raw/customers.csv
+        echo "c_002,bob@example.com" >> SemanticLayer/data/raw/customers.csv
+        echo "transaction_id,customer_id,amount" > SemanticLayer/data/raw/transactions.csv
+        echo "t_001,c_001,50.00" >> SemanticLayer/data/raw/transactions.csv
+        echo "t_002,c_002,100.00" >> SemanticLayer/data/raw/transactions.csv
+
+    - name: Run ETL with pandas
+      run: |
+        python SemanticLayer/scripts/process_data.py
+
     - name: Run data validation
       run: |
-        # Create sample data for validation
-        mkdir -p SemanticLayer/data/raw
-        echo "customer_id,email
-c_001,alice@example.com
-c_002,bob@example.com" > SemanticLayer/data/raw/customers.csv
-        echo "transaction_id,customer_id,amount
-t_001,c_001,50.00
-t_002,c_002,100.00" > SemanticLayer/data/raw/transactions.csv
-        
-        # Run ETL with pandas (no Java needed)
-        python SemanticLayer/scripts/process_data.py
-        
-        # Validate output
         python SemanticLayer/scripts/data_validation.py
