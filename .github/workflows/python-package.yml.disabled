@@ -1,0 +1,65 @@
+name: Python package
+
+on:
+  push:
+    branches: [ "main", "develop", "feature/*" ]
+  pull_request:
+    branches: [ "main", "develop", "feature/*" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f SemanticLayer/requirements.txt ]; then pip install -r SemanticLayer/requirements.txt; fi
+    
+    - name: Create sample data
+      run: |
+        mkdir -p SemanticLayer/data/raw
+        echo "customer_id,email
+c_001,alice@example.com
+c_002,bob@example.com
+c_003,charlie@example.com
+c_004,diana@example.com
+c_005,eve@example.com" > SemanticLayer/data/raw/customers.csv
+        echo "transaction_id,customer_id,amount
+t_001,c_001,50.00
+t_002,c_001,75.50
+t_003,c_001,49.99
+t_004,c_002,150.00
+t_005,c_002,150.00
+t_006,c_003,75.25
+t_007,c_004,100.00
+t_008,c_004,120.00
+t_009,c_004,110.00
+t_010,c_005,80.00" > SemanticLayer/data/raw/transactions.csv
+    
+    - name: Run pandas ETL (no Java required)
+      run: |
+        python SemanticLayer/scripts/process_data.py
+    
+    - name: Run pytest
+      run: |
+        python -m pytest -v SemanticLayer/tests/
+    
+    - name: Run data validation
+      run: |
+        python SemanticLayer/scripts/data_validation.py
+    
+    - name: Run SQL layer
+      run: |
+        python SemanticLayer/scripts/sql_layer.py

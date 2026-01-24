@@ -1,0 +1,128 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    QUICK TEST - ONE PAGE REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+LOCATION: /Users/dattu/AI/AI-Project
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: ACTIVATE ENVIRONMENT (Choose your OS)
+═══════════════════════════════════════════════════════════════════════════════
+
+macOS/Linux:
+  source .venv/bin/activate
+
+Windows PowerShell:
+  .\.venv\Scripts\Activate.ps1
+
+Windows Command Prompt:
+  .\.venv\Scripts\activate.bat
+
+Expected: (.venv) appears in prompt
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: SYNTAX CHECK (30 seconds)
+═══════════════════════════════════════════════════════════════════════════════
+
+python -m py_compile SemanticLayer/scripts/summary_stats.py
+python -m py_compile SemanticLayer/scripts/data_validation.py
+
+Expected: No output
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: IMPORTS (30 seconds)
+═══════════════════════════════════════════════════════════════════════════════
+
+python -c "import pyspark, pandas, duckdb, pytest; print('✓ OK')"
+
+Expected: ✓ OK
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 4: RUN ETL (5-10 minutes) ⏱️  MOST IMPORTANT!
+═══════════════════════════════════════════════════════════════════════════════
+
+python SemanticLayer/scripts/process_data_spark.py
+
+Expected:
+  Loading raw data...
+  Cleaning to Silver layer...
+  Building Gold semantic view...
+  ✓ Success!
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 5: VERIFY FILES (1 minute)
+═══════════════════════════════════════════════════════════════════════════════
+
+ls -lah SemanticLayer/data/gold/gold_view.csv
+
+Expected: File exists, size > 0
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 6: VIEW DATA (1 minute)
+═══════════════════════════════════════════════════════════════════════════════
+
+head -5 SemanticLayer/data/gold/gold_view.csv
+
+Expected: Shows customer_id, total_spend, transaction_count, avg_transaction_amount
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 7: DATA VALIDATION (1 minute)
+═══════════════════════════════════════════════════════════════════════════════
+
+python SemanticLayer/scripts/data_validation.py
+
+Expected: ✓ marks and "0 failed"
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 8: SUMMARY STATS (1 minute)
+═══════════════════════════════════════════════════════════════════════════════
+
+python SemanticLayer/scripts/summary_stats.py
+
+Expected: Shows metrics like:
+  Total Customers: 5
+  Total Spend: $931.74
+  Total Transactions: 10
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 9: SQL QUERIES (1 minute)
+═══════════════════════════════════════════════════════════════════════════════
+
+python SemanticLayer/scripts/sql_layer.py
+
+Expected: Shows top spenders results
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 10: PYTEST (2 minutes)
+═══════════════════════════════════════════════════════════════════════════════
+
+pytest -v SemanticLayer/tests/
+
+Expected: 4 passed
+
+═══════════════════════════════════════════════════════════════════════════════
+FINAL: IF ALL PASS ✅
+═══════════════════════════════════════════════════════════════════════════════
+
+git add .
+git commit -m "[DOCS] Add comprehensive documentation"
+git push origin feature/semantic-layer-pyspark-sql-tests
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK FIXES FOR COMMON ERRORS
+═══════════════════════════════════════════════════════════════════════════════
+
+"Java not found":
+  python SemanticLayer/scripts/process_data.py
+
+"Module not found":
+  pip install -r SemanticLayer/requirements.txt
+
+"gold_view.csv missing":
+  Check STEP 4 output, re-run STEP 4
+
+"Test fails":
+  pytest -vv SemanticLayer/tests/
+
+═══════════════════════════════════════════════════════════════════════════════
+TOTAL TIME: ~15 minutes
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,6 @@
+customer_id,total_spend,transaction_count,avg_transaction_amount
+c_004,330.0,3,110.0
+c_002,300.0,2,150.0
+c_001,175.49,3,58.5
+c_005,80.0,1,80.0
+c_003,75.25,1,75.25
