@@ -5,7 +5,7 @@
         "customer_id",
         "email"
       ],
-      "rows": 5
+      "rows": 20000
     },
     "transactions_silver": {
       "columns": [
@@ -13,7 +13,7 @@
         "customer_id",
         "amount"
       ],
-      "rows": 10
+      "rows": 59163
     },
     "gold_view": {
       "columns": [
@@ -22,7 +22,7 @@
         "transaction_count",
         "avg_transaction_amount"
       ],
-      "rows": 5
+      "rows": 16268
     }
   }
 }
