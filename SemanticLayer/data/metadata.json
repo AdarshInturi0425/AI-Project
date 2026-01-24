@@ -1,0 +1,28 @@
+{
+  "tables": {
+    "customers_silver": {
+      "columns": [
+        "customer_id",
+        "email"
+      ],
+      "rows": 5
+    },
+    "transactions_silver": {
+      "columns": [
+        "transaction_id",
+        "customer_id",
+        "amount"
+      ],
+      "rows": 10
+    },
+    "gold_view": {
+      "columns": [
+        "customer_id",
+        "total_spend",
+        "transaction_count",
+        "avg_transaction_amount"
+      ],
+      "rows": 5
+    }
+  }
+}

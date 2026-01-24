@@ -1,0 +1,52 @@
+name: SemanticLayer Tests
+
+on:
+  push:
+    branches: [ feature/semantic-layer-pyspark-sql-tests, main, develop ]
+  pull_request:
+    branches: [ feature/semantic-layer-pyspark-sql-tests, main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.9', '3.10', '3.11' ]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -r SemanticLayer/requirements.txt
+
+    - name: Run PySpark ETL
+      run: |
+        python SemanticLayer/scripts/process_data_spark.py
+
+    - name: Verify output files
+      run: |
+        [ -f SemanticLayer/data/silver/customers_silver.csv ] || exit 1
+        [ -f SemanticLayer/data/silver/transactions_silver.csv ] || exit 1
+        [ -f SemanticLayer/data/gold/gold_view.csv ] || exit 1
+        [ -f SemanticLayer/data/metadata.json ] || exit 1
+
+    - name: Run pytest
+      run: |
+        pytest -v SemanticLayer/tests/
+
+    - name: Run SQL layer queries
+      run: |
+        python SemanticLayer/scripts/sql_layer.py
